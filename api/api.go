@@ -2,9 +2,9 @@ package api
 
 import (
 	"context"
-	"github.com/amir-the-h/okex"
-	"github.com/amir-the-h/okex/api/rest"
-	"github.com/amir-the-h/okex/api/ws"
+	"github.com/kattana-io/okex"
+	"github.com/kattana-io/okex/api/rest"
+	"github.com/kattana-io/okex/api/ws"
 )
 
 // Client is the main api wrapper of okex
