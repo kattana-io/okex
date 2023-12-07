@@ -7,9 +7,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"github.com/kattana-io/okex"
 	"github.com/kattana-io/okex/events"
-	"github.com/gorilla/websocket"
 	"net/http"
 	"sync"
 	"time"
@@ -279,7 +279,11 @@ func (c *ClientWs) sender(p bool) error {
 				return err
 			}
 		case <-ticker.C:
-			if c.conn[p] != nil && (c.lastTransmit[p] == nil || (c.lastTransmit[p] != nil && time.Since(*c.lastTransmit[p]) > PingPeriod)) {
+			// NOTICE: lastTransmit may fail because of concurrent access
+			c.mu[p].RLock()
+			mustPing := c.conn[p] != nil && (c.lastTransmit[p] == nil || (c.lastTransmit[p] != nil && time.Since(*c.lastTransmit[p]) > PingPeriod))
+			c.mu[p].RUnlock()
+			if mustPing {
 				go func() {
 					c.sendChan[p] <- []byte("ping")
 				}()
